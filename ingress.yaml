@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-pro-graf
+  namespace: monitoring
+  annotations:
+    cert-manager.io/acme-challenge-type: http01
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "false"
+    ingress.kubernetes.io/proxy-body-size: 100m
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.org/body-size: 100m
+    nginx.org/client-max-body-size: 100m
+    nginx/body-size: 100m
+    nginx/client-max-body-size: 100m
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    #nginx.ingress.kubernetes.io/configuration-snippet: |
+    #  if ($uri = /fotografia-de-producto){
+    #    return 302 https://gst.freyi.es/blog/our-blog-1/post/fotografia-de-producto-en-guadaltech-1689;
+    #  }
+spec:
+  ingressClassName: nginx
+  #tls:
+  #- hosts:
+  #  - prometheus.guadaltech.xyz
+  #  secretName: prometheus-guadaltech-tls
+  rules:
+  - host: graf.guadaltech.xyz
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: "/"
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+  - host: prom.guadaltech.xyz
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: "/"
+        backend:
+          service:
+            name: prometheus-k8s
+            port:
+              number: 9090
